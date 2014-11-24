@@ -1,4 +1,4 @@
-// Predictive control for walking
+// Preview control for walking
 
 timer();
 
