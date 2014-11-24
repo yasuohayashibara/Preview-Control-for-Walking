@@ -1,16 +1,16 @@
-% predictive control for walking
+% preview control for walking
 
 pkg load control
 
 clear;
 t0=time();
-											%‘«‚Ì’…’nŽžŠÔ(s)Cx•ûŒü‚ÌˆÊ’u(m)Cy•ûŒü‚ÌˆÊ’u(m)
+											%è¶³ã®ç€åœ°æ™‚é–“(s)ï¼Œxæ–¹å‘ã®ä½ç½®(m)ï¼Œyæ–¹å‘ã®ä½ç½®(m)
 foot = [0 0 0; 0.6 0.1 0.06; 0.9 0.2 -0.06; 1.2 0.3 0.06; 1.5 0.4 -0.06; 1.8 0.5 0.06; 2.4 0.6 -0.06; 3.0 0.7 0.0; 100 0 0];
-forward_period = 1.0;						% —\Œ©§Œä‚ÌŽžŠÔ(s)
-calculate_period = 4.0;						% •àsƒpƒ^[ƒ“‚ð¶¬‚·‚éŠúŠÔ(s)
-dt = 0.01;									% ƒTƒ“ƒvƒŠƒ“ƒOƒ^ƒCƒ€ (s)
-zh = 0.27;									% dSˆÊ’u (m)
-g  = 9.8;									% d—Í‰Á‘¬“x (m/s^2)
+forward_period = 1.0;						% äºˆè¦‹åˆ¶å¾¡ã®æ™‚é–“(s)
+calculate_period = 4.0;						% æ­©è¡Œãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ç”Ÿæˆã™ã‚‹æœŸé–“(s)
+dt = 0.01;									% ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã‚¿ã‚¤ãƒ  (s)
+zh = 0.27;									% é‡å¿ƒä½ç½® (m)
+g  = 9.8;									% é‡åŠ›åŠ é€Ÿåº¦ (m/s^2)
 A = [0 1 0; 0 0 1; 0 0 0];
 B = [0; 0; 1];
 C = [1 0 -zh/g];
@@ -31,8 +31,8 @@ GR = [1; Zero];
 Gd = [-C_d*E_d; E_d];
 
 Q = zeros(4);
-Q(1) = 10^8;								% Å“K§Œä‚Ìd‚ÝŒW”@‘åFZMP‚ª—‘z‚É‹ß‚Ã‚­
-H = 1;										% “¯‚¶‚­d‚ÝŒW”@‘åF“ü—Í‚ª­‚È‚­‚È‚éD
+Q(1) = 10^8;								% æœ€é©åˆ¶å¾¡ã®é‡ã¿ä¿‚æ•°ã€€å¤§ï¼šZMPãŒç†æƒ³ã«è¿‘ã¥ã
+H = 1;										% åŒã˜ãé‡ã¿ä¿‚æ•°ã€€å¤§ï¼šå…¥åŠ›ãŒå°‘ãªããªã‚‹ï¼Ž
 
 P = dare(Phai, G, Q, H);
 F = -(H+G'*P*G)^(-1)*G'*P*Phai;
@@ -44,7 +44,7 @@ yp = x;
 
 t = 0:dt:calculate_period;
 
-i = 1;										% –Ú•WZMP‚Ì¶¬
+i = 1;										% ç›®æ¨™ZMPã®ç”Ÿæˆ
 n = 1;
 for tt = 0:dt:calculate_period+forward_period+1
 	if (tt == foot(n,1))
@@ -67,7 +67,7 @@ time()-t0
 
 for tt = t
 	i = i + 1;
-%	fd = (H+G'*P*G)^(-1)*G'*(xi')^1*P*Gd;	% ŠO—œ‹Ž—p@–¢Žg—p
+%	fd = (H+G'*P*G)^(-1)*G'*(xi')^1*P*Gd;	% å¤–ä¹±é™¤åŽ»ç”¨ã€€æœªä½¿ç”¨
 	px = C_d*x;
 	py = C_d*y;
 	ex = prefx(i) - px;
