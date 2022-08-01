@@ -1,9 +1,6 @@
 % preview control for walking
 
-pkg load control
-
 clear;
-t0=time();
 											%足の着地時間(s)，x方向の位置(m)，y方向の位置(m)
 foot = [0 0 0; 0.6 0.1 0.06; 0.9 0.2 -0.06; 1.2 0.3 0.06; 1.5 0.4 -0.06; 1.8 0.5 0.06; 2.4 0.6 -0.06; 3.0 0.7 0.0; 100 0 0];
 forward_period = 1.0;						% 予見制御の時間(s)
@@ -17,11 +14,8 @@ C = [1 0 -zh/g];
 D = 0;
 sys = ss(A, B, C, D);
 sys_d = c2d(sys, dt);
-if (substr(version,1,3)=="3.2")
-	[A_d, B_d, C_d, D_d] = sys2ss(sys_d);
-else
-	[A_d, B_d, C_d, D_d] = ssdata(sys_d);
-endif
+% [A_d, B_d, C_d, D_d] = sys2ss(sys_d);
+[A_d, B_d, C_d, D_d] = ssdata(sys_d);
 E_d = [dt; 1; 0];
 
 Zero = [0; 0; 0];
@@ -54,16 +48,15 @@ for tt = 0:dt:calculate_period+forward_period+1
 	else
 		prefx(i) = prefx(i-1);
 		prefy(i) = prefy(i-1);
-	endif
+    end
 	i = i + 1;
-endfor
+end
 
 i = 0;
-ux = uy = 0;
+ux = 0;
+uy = 0;
 
 xi = (eye(4)-G*(H+G'*P*G)^(-1)*G'*P)*Phai;
-
-time()-t0
 
 for tt = t
 	i = i + 1;
@@ -80,22 +73,22 @@ for tt = t
 	j = 0;
 	for ttt = tt : dt : (tt + forward_period)
 		j = j + 1;
-		if (prefx(i+j) - prefx(i+j-1)) != 0
+		if (prefx(i+j) - prefx(i+j-1)) ~= 0
 			f  = -(H+G'*P*G)^(-1)*G'*(xi')^(j-1)*P*GR;
 			dux = dux + f * (prefx(i+j) - prefx(i+j-1));
-		endif
-	endfor
-	ux += dux;
+        end
+    end
+	ux = ux + dux;
 	duy = F * Y;
 	j = 0;
 	for ttt = tt : dt : (tt + forward_period)
 		j = j + 1;
-		if (prefy(i+j) - prefy(i+j-1)) != 0
+		if (prefy(i+j) - prefy(i+j-1)) ~= 0
 			f  = -(H+G'*P*G)^(-1)*G'*(xi')^(j-1)*P*GR;
 			duy = duy + f * (prefy(i+j) - prefy(i+j-1));
-		endif
-	endfor
-	uy += duy;
+        end
+    end
+	uy = uy + duy;
 
 	dx = 0;
 	dy = 0;
@@ -107,9 +100,7 @@ for tt = t
 	y1(i) = prefy(i);
 	x2(i) = px;
 	y2(i) = py;
-endfor
-
-time()-t0
+end
 
 subplot(2,1,1);
 plot(x0, y0, "o", x1, y1, x2, y2);
